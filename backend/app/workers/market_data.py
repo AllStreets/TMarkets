@@ -1,11 +1,14 @@
+import logging
 import yfinance as yf
 from datetime import datetime
 from app.workers.celery_app import celery
 from app.database import SessionLocal
 from app.models import MarketData
 
+logger = logging.getLogger(__name__)
+
 WATCHLIST = [
-    "SPY", "QQQ", "DIA", "IWM", "VIX", "DXY",
+    "SPY", "QQQ", "DIA", "IWM", "^VIX", "DX-Y.NYB",
     "AAPL", "MSFT", "NVDA", "AMZN", "TSLA", "META", "GOOGL",
     "GLD", "TLT", "SH", "SQQQ", "XAR", "FXI", "KWEB",
     "XLE", "XLY", "XLF", "XLU", "XLB",
@@ -33,14 +36,18 @@ def fetch_quotes(symbols: list, db) -> None:
                 fetched_at=datetime.utcnow(),
             )
             db.add(row)
-        except Exception:
+        except Exception as e:
+            logger.warning("Failed to fetch %s: %r", symbol, e)
             continue
-    db.commit()
 
 @celery.task(name="app.workers.market_data.fetch_quotes_task")
 def fetch_quotes_task():
     db = SessionLocal()
     try:
         fetch_quotes(WATCHLIST, db)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     finally:
         db.close()

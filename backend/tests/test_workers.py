@@ -12,8 +12,8 @@ def test_fetch_quotes_stores_records(db):
         fetch_quotes(SYMBOLS, db)
 
     from app.models import MarketData
-    rows = db.query(MarketData).all()
+    rows = db.query(MarketData).filter(MarketData.symbol.in_(SYMBOLS)).all()
     assert len(rows) == 3
-    assert rows[0].symbol == "SPY"
-    assert abs(rows[0].change_pct - ((541.2 - 534.5) / 534.5 * 100)) < 0.01
-    assert rows[0].source == "yfinance"
+    spy_row = next(r for r in rows if r.symbol == "SPY")
+    assert abs(spy_row.change_pct - ((541.2 - 534.5) / 534.5 * 100)) < 0.01
+    assert spy_row.source == "yfinance"
