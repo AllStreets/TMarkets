@@ -7,3 +7,5 @@ node_modules/
 .superpowers/
 *.egg-info/
 .pytest_cache/
+.DS_Store
+*.db
