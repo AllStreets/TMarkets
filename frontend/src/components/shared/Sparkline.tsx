@@ -1,3 +1,6 @@
+'use client';
+import { useId } from 'react';
+
 interface SparklineProps {
   data: number[];
   color: string;
@@ -5,6 +8,7 @@ interface SparklineProps {
 }
 
 export function Sparkline({ data, color, height = 44 }: SparklineProps) {
+  const uid = useId().replace(/:/g, '');
   if (data.length < 2) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -14,7 +18,7 @@ export function Sparkline({ data, color, height = 44 }: SparklineProps) {
   const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * (h - 4) - 2}`).join(' ');
   const areaD = `M${pts.split(' ').join(' L')} L${w},${h} L0,${h} Z`;
   const lineD = `M${pts.split(' ').join(' L')}`;
-  const id = `grad-${color.replace('#', '')}`;
+  const id = `grad-${uid}`;
 
   return (
     <svg width="100%" height={height} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">

@@ -15,10 +15,11 @@ interface ChartModalProps {
 
 export function ChartModal({ open, symbol, price, change, direction, source, data, onClose }: ChartModalProps) {
   useEffect(() => {
+    if (!open) return;
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
+  }, [open, onClose]);
 
   if (!open) return null;
   const color = direction === 'bull' ? 'var(--green)' : direction === 'bear' ? 'var(--red)' : 'var(--blue)';
@@ -34,7 +35,10 @@ export function ChartModal({ open, symbol, price, change, direction, source, dat
         <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Inter,sans-serif', marginBottom: 16 }}>
           {price} · {change} · 30-day · {source}
         </div>
-        <Sparkline data={data.length > 1 ? data : Array.from({ length: 30 }, (_, i) => 100 + Math.sin(i / 3) * 5 + i * 0.3)} color={color} height={180} />
+        {data.length > 1
+          ? <Sparkline data={data} color={color} height={180} />
+          : <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', fontSize: 12 }}>No history available</div>
+        }
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginTop: 16 }}>
           {['Open', 'High', 'Low', 'Volume'].map(k => (
             <div key={k} className="tile">
