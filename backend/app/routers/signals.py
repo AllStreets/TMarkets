@@ -25,7 +25,7 @@ def _to_schema(sig) -> dict:
         affected_sectors=sig.affected_sectors,
         llm_reasoning=sig.llm_reasoning,
         posted_at=sig.posted_at.isoformat(),
-    ).dict()
+    ).model_dump()
 
 
 @router.get("/latest")

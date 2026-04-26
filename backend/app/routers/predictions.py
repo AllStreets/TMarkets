@@ -24,4 +24,4 @@ def latest_prediction(db: Session = Depends(get_db)):
         confidence=pred.confidence,
         horizon_days=pred.horizon_days,
         created_at=pred.created_at.isoformat(),
-    ).dict()
+    ).model_dump()

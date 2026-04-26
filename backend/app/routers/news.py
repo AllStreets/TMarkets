@@ -21,6 +21,6 @@ def news_feed(limit: int = 30, db: Session = Depends(get_db)):
             url=a.url,
             published_at=a.published_at.isoformat(),
             tags=a.tags,
-        ).dict()
+        ).model_dump()
         for a in articles
     ]

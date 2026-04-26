@@ -35,6 +35,6 @@ def quotes(db: Session = Depends(get_db)):
             volume=r.volume,
             source=r.source,
             fetched_at=r.fetched_at.isoformat(),
-        ).dict()
+        ).model_dump()
         for r in rows
     ]
