@@ -62,7 +62,7 @@ This script:
 
 | Service | URL |
 |---|---|
-| Dashboard | http://localhost:3000 |
+| Dashboard | http://localhost:3002 |
 | API | http://localhost:8000 |
 | API docs | http://localhost:8000/docs |
 
@@ -161,7 +161,7 @@ POSTGRES_URL=postgresql://tmarkets:STRONG_PASSWORD@db:5432/tmarkets
 ```nginx
 server {
     server_name yourdomain.com;
-    location / { proxy_pass http://localhost:3000; }
+    location / { proxy_pass http://localhost:3002; }
 }
 
 server {

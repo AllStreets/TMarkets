@@ -12,6 +12,6 @@ docker compose run --rm api alembic upgrade head
 docker compose up -d api worker beat frontend
 echo ""
 echo "TMarkets running:"
-echo "  Dashboard: http://localhost:3000"
+echo "  Dashboard: http://localhost:3002"
 echo "  API:       http://localhost:8000"
 echo "  API docs:  http://localhost:8000/docs"

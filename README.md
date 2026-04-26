@@ -281,7 +281,7 @@ cp .env.example .env
 ./start.sh
 ```
 
-Open **http://localhost:3000**
+Open **http://localhost:3002**
 
 ---
 
