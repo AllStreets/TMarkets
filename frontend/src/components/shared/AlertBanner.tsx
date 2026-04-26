@@ -25,9 +25,9 @@ export function AlertBanner({ alert }: Props) {
       </div>
       <div style={{ fontSize: 10, color: '#e8c0c8', marginBottom: 8, fontStyle: 'italic' }}>&quot;{alert.signal_text.slice(0, 100)}&quot;</div>
       <div style={{ fontSize: 10 }}>
-        <span style={{ color: 'var(--green)', fontWeight: 600 }}>BUY: {alert.buy_list.map(b => b.ticker).join(', ')}</span>
-        {' · '}
-        <span style={{ color: 'var(--red)', fontWeight: 600 }}>SHORT: {alert.short_list.map(s => s.ticker).join(', ')}</span>
+        {alert.buy_list.length > 0 && <span style={{ color: 'var(--green)', fontWeight: 600 }}>BUY: {alert.buy_list.map(b => b.ticker).join(', ')}</span>}
+        {alert.buy_list.length > 0 && alert.short_list.length > 0 && ' · '}
+        {alert.short_list.length > 0 && <span style={{ color: 'var(--red)', fontWeight: 600 }}>SHORT: {alert.short_list.map(s => s.ticker).join(', ')}</span>}
       </div>
       <div style={{ fontSize: 8, color: '#1a3a2a', fontFamily: 'Inter,sans-serif', marginTop: 4 }}>
         Confidence: {Math.round(alert.confidence * 100)}%

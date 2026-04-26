@@ -1,3 +1,4 @@
+'use client';
 import type { TrumpSignal } from '@/lib/types';
 import { CiteBadge } from '@/components/shared/CiteBadge';
 

@@ -1,3 +1,4 @@
+'use client';
 import type { Prediction } from '@/lib/types';
 
 interface Props { prediction: Prediction | null; }
@@ -17,15 +18,15 @@ export function AIRecommendationPanel({ prediction }: Props) {
         <span style={{ width: 5, height: 5, background: 'var(--green)', borderRadius: '50%', boxShadow: '0 0 8px var(--green)', display: 'inline-block' }} />
         AI Call · GPT-4.1-mini + Quant
       </div>
-      {prediction.buy_list.map((b, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, padding: '5px 8px', borderRadius: 3, background: '#071a0f', border: '1px solid #0d3a1e' }}>
+      {prediction.buy_list.map((b) => (
+        <div key={b.ticker} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, padding: '5px 8px', borderRadius: 3, background: '#071a0f', border: '1px solid #0d3a1e' }}>
           <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, fontFamily: 'Inter,sans-serif', color: 'var(--green)', width: 32 }}>BUY</span>
           <span style={{ fontSize: 12, fontWeight: 600 }}>{b.ticker}</span>
           <span style={{ fontSize: 9, color: '#3a5a4a', fontFamily: 'Inter,sans-serif', marginLeft: 'auto', textAlign: 'right' }}>{b.reason}</span>
         </div>
       ))}
-      {prediction.short_list.map((s, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, padding: '5px 8px', borderRadius: 3, background: '#1a0707', border: '1px solid #3a0d0d' }}>
+      {prediction.short_list.map((s) => (
+        <div key={s.ticker} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, padding: '5px 8px', borderRadius: 3, background: '#1a0707', border: '1px solid #3a0d0d' }}>
           <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, fontFamily: 'Inter,sans-serif', color: 'var(--red)', width: 32 }}>SHORT</span>
           <span style={{ fontSize: 12, fontWeight: 600 }}>{s.ticker}</span>
           <span style={{ fontSize: 9, color: '#5a3a3a', fontFamily: 'Inter,sans-serif', marginLeft: 'auto', textAlign: 'right' }}>{s.reason}</span>
