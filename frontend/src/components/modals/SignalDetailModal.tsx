@@ -31,8 +31,8 @@ export function SignalDetailModal({ open, signal, prediction, onClose }: Props) 
           <div>
             <div style={{ fontSize: 9, color: '#1a5a3a', textTransform: 'uppercase', letterSpacing: 1.5, fontFamily: 'Inter,sans-serif', fontWeight: 700, marginBottom: 8 }}>Algorithm Call</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {prediction.buy_list.map(b => <span key={b.ticker} style={{ padding: '3px 10px', background: '#071a0f', border: '1px solid #0d3a1e', borderRadius: 3, color: 'var(--green)', fontSize: 11, fontWeight: 600 }}>BUY {b.ticker}</span>)}
-              {prediction.short_list.map(s => <span key={s.ticker} style={{ padding: '3px 10px', background: '#1a0707', border: '1px solid #3a0d0d', borderRadius: 3, color: 'var(--red)', fontSize: 11, fontWeight: 600 }}>SHORT {s.ticker}</span>)}
+              {(prediction.buy_list ?? []).map(b => <span key={b.ticker} style={{ padding: '3px 10px', background: '#071a0f', border: '1px solid #0d3a1e', borderRadius: 3, color: 'var(--green)', fontSize: 11, fontWeight: 600 }}>BUY {b.ticker}</span>)}
+              {(prediction.short_list ?? []).map(s => <span key={s.ticker} style={{ padding: '3px 10px', background: '#1a0707', border: '1px solid #3a0d0d', borderRadius: 3, color: 'var(--red)', fontSize: 11, fontWeight: 600 }}>SHORT {s.ticker}</span>)}
             </div>
             <div style={{ fontSize: 8, color: '#1a3a2a', fontFamily: 'Inter,sans-serif', marginTop: 8 }}>Confidence: {Math.round(prediction.confidence * 100)}% · Horizon: {prediction.horizon_days} days · GPT-4.1-mini + Quant</div>
           </div>
