@@ -17,7 +17,7 @@ export function TrumpSignalPanel({ signal, onClick }: Props) {
         Trump Signal Feed
       </div>
       <div style={{ fontSize: 11, color: '#e8c0c8', lineHeight: 1.55, fontStyle: 'italic', borderLeft: '2px solid #7f1d1d', paddingLeft: 10, marginBottom: 8 }}>
-        &quot;{signal.raw_text.slice(0, 200)}&quot;
+        &quot;{(signal.raw_text ?? '').slice(0, 200)}&quot;
       </div>
       <div style={{ fontSize: 9, color: '#4a2030', fontFamily: 'Inter,sans-serif' }}>
         <span style={{ color: '#7a3040' }}>{signal.source}</span> · {new Date(signal.posted_at).toLocaleTimeString()} · {signal.signal_type ?? 'Classifying…'}
