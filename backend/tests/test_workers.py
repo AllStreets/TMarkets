@@ -34,8 +34,9 @@ def test_is_duplicate_detects_same_text(db):
     )
     db.add(existing)
     db.commit()
-    assert is_duplicate("Tariffs on China raised to 145%!", db) is True
-    assert is_duplicate("Completely different statement about energy", db) is False
+    recent_signals = [existing]
+    assert is_duplicate("Tariffs on China raised to 145%!", recent_signals) is True
+    assert is_duplicate("Completely different statement about energy", recent_signals) is False
 
 def test_fetch_trump_news_filters_by_trump(db):
     fake_articles = [

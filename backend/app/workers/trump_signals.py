@@ -4,6 +4,7 @@ import logging
 import requests
 from datetime import datetime, timedelta
 from difflib import SequenceMatcher
+from email.utils import parsedate_to_datetime
 from bs4 import BeautifulSoup
 from app.workers.celery_app import celery
 from app.database import SessionLocal
@@ -15,10 +16,8 @@ logger = logging.getLogger(__name__)
 
 TRUMP_TERMS = ["trump", "president trump", "potus", "donald trump"]
 
-def is_duplicate(text: str, db) -> bool:
-    cutoff = datetime.utcnow() - timedelta(minutes=30)
-    recent = db.query(TrumpSignal).filter(TrumpSignal.posted_at >= cutoff).all()
-    for sig in recent:
+def is_duplicate(text: str, recent_signals: list) -> bool:
+    for sig in recent_signals:
         ratio = SequenceMatcher(None, text.lower(), sig.raw_text.lower()).ratio()
         if ratio > 0.85:
             return True
@@ -28,6 +27,7 @@ def fetch_trump_news(api_key: str) -> list[dict]:
     url = "https://newsapi.org/v2/everything"
     params = {"q": "Trump", "language": "en", "sortBy": "publishedAt", "pageSize": 20, "apiKey": api_key}
     resp = requests.get(url, params=params, timeout=10)
+    resp.raise_for_status()
     articles = resp.json().get("articles", [])
     results = []
     for a in articles:
@@ -74,7 +74,6 @@ def scrape_truth_social() -> list[dict]:
             posted_at = datetime.utcnow()
             if pub_date:
                 try:
-                    from email.utils import parsedate_to_datetime
                     posted_at = parsedate_to_datetime(pub_date.text).replace(tzinfo=None)
                 except Exception:
                     pass
@@ -85,9 +84,11 @@ def scrape_truth_social() -> list[dict]:
         return []
 
 def ingest_signals(raw_items: list[dict], db) -> list[TrumpSignal]:
+    cutoff = datetime.utcnow() - timedelta(hours=24)
+    recent = db.query(TrumpSignal).filter(TrumpSignal.posted_at >= cutoff).all()
     saved = []
     for item in raw_items:
-        if is_duplicate(item["text"], db):
+        if is_duplicate(item["text"], recent):
             continue
         sig = TrumpSignal(
             raw_text=item["text"],
@@ -95,9 +96,11 @@ def ingest_signals(raw_items: list[dict], db) -> list[TrumpSignal]:
             posted_at=item["posted_at"],
         )
         db.add(sig)
-        db.commit()
-        db.refresh(sig)
         saved.append(sig)
+    if saved:
+        db.commit()
+        for sig in saved:
+            db.refresh(sig)
     return saved
 
 @celery.task(name="app.workers.trump_signals.fetch_trump_signals_task")
