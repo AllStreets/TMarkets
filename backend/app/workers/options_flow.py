@@ -23,6 +23,7 @@ def fetch_options_task():
         return
     for symbol in OPTIONS_WATCHLIST:
         try:
-            fetch_polygon_options(symbol, settings.polygon_api_key)
+            results = fetch_polygon_options(symbol, settings.polygon_api_key)
+            logger.info("Fetched %d options contracts for %s", len(results), symbol)
         except Exception as e:
             logger.warning("Options fetch failed for %s: %r", symbol, e)

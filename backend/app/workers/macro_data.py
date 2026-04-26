@@ -36,6 +36,7 @@ def fetch_macro_task():
             try:
                 fetch_fred_series(series_id, label, db)
             except Exception as e:
+                db.rollback()
                 logger.warning("Failed to fetch FRED series %s: %r", series_id, e)
     finally:
         db.close()
