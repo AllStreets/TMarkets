@@ -44,6 +44,7 @@ def fetch_trump_news(api_key: str) -> list[dict]:
 def scrape_wh_press() -> list[dict]:
     try:
         resp = requests.get("https://www.whitehouse.gov/news/", timeout=10)
+        resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
         items = []
         for article in soup.select("article")[:5]:
@@ -66,6 +67,7 @@ def scrape_wh_press() -> list[dict]:
 def scrape_truth_social() -> list[dict]:
     try:
         resp = requests.get("https://truthsocial.com/@realDonaldTrump.rss", timeout=10)
+        resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "xml")
         items = []
         for item in soup.find_all("item")[:10]:
