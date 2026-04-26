@@ -12,7 +12,7 @@ export function TrumpSignalPanel({ signal, onClick }: Props) {
       onMouseLeave={e => (e.currentTarget.style.borderColor = '#2d0a1a')}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 8.5, color: '#7f2a3a', textTransform: 'uppercase', letterSpacing: 1.5, fontFamily: 'Inter,sans-serif', fontWeight: 700, marginBottom: 8 }}>
-        <span style={{ width: 5, height: 5, background: 'var(--red)', borderRadius: '50%', boxShadow: '0 0 6px var(--red)', display: 'inline-block' }} />
+        <span style={{ width: 5, height: 5, background: 'var(--red)', borderRadius: '50%', boxShadow: '0 0 6px var(--red)', display: 'inline-block', animation: 'pulse 1.5s ease-in-out infinite' }} />
         Trump Signal Feed
       </div>
       <div style={{ fontSize: 11, color: '#e8c0c8', lineHeight: 1.55, fontStyle: 'italic', borderLeft: '2px solid #7f1d1d', paddingLeft: 10, marginBottom: 8 }}>
