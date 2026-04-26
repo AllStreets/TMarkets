@@ -7,7 +7,7 @@ if [ ! -f .env ]; then
 fi
 docker compose up -d db redis
 echo "Waiting for PostgreSQL..."
-sleep 3
+until docker compose exec db pg_isready -q 2>/dev/null; do sleep 1; done
 docker compose run --rm api alembic upgrade head
 docker compose up -d api worker beat frontend
 echo ""
