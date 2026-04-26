@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from sqlalchemy import String, Float, Integer, DateTime, Text, JSON
 from sqlalchemy.orm import mapped_column, Mapped
 from app.database import Base
@@ -9,7 +10,7 @@ class MarketData(Base):
     symbol: Mapped[str] = mapped_column(String(20), index=True)
     price: Mapped[float] = mapped_column(Float)
     change_pct: Mapped[float] = mapped_column(Float)
-    volume: Mapped[float] = mapped_column(Float, nullable=True)
+    volume: Mapped[Optional[float]] = mapped_column(Float)
     source: Mapped[str] = mapped_column(String(50))
     fetched_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
 
@@ -19,12 +20,12 @@ class TrumpSignal(Base):
     raw_text: Mapped[str] = mapped_column(Text)
     source: Mapped[str] = mapped_column(String(100))
     posted_at: Mapped[datetime] = mapped_column(DateTime, index=True)
-    signal_type: Mapped[str] = mapped_column(String(50), nullable=True)
-    affected_tickers: Mapped[list] = mapped_column(JSON, nullable=True)
-    affected_sectors: Mapped[list] = mapped_column(JSON, nullable=True)
-    directional_bias: Mapped[dict] = mapped_column(JSON, nullable=True)
-    confidence: Mapped[float] = mapped_column(Float, nullable=True)
-    llm_reasoning: Mapped[str] = mapped_column(Text, nullable=True)
+    signal_type: Mapped[Optional[str]] = mapped_column(String(50))
+    affected_tickers: Mapped[Optional[list]] = mapped_column(JSON)
+    affected_sectors: Mapped[Optional[list]] = mapped_column(JSON)
+    directional_bias: Mapped[Optional[dict]] = mapped_column(JSON)
+    confidence: Mapped[Optional[float]] = mapped_column(Float)
+    llm_reasoning: Mapped[Optional[str]] = mapped_column(Text)
 
 class Prediction(Base):
     __tablename__ = "predictions"
@@ -44,7 +45,7 @@ class NewsArticle(Base):
     source: Mapped[str] = mapped_column(String(100))
     url: Mapped[str] = mapped_column(Text)
     published_at: Mapped[datetime] = mapped_column(DateTime, index=True)
-    tags: Mapped[list] = mapped_column(JSON, nullable=True)
+    tags: Mapped[Optional[list]] = mapped_column(JSON)
 
 class MacroData(Base):
     __tablename__ = "macro_data"
