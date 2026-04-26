@@ -29,7 +29,8 @@ class ConnectionManager:
                 logger.warning("WebSocket send failed: %r", e)
                 dead.append(ws)
         for ws in dead:
-            self.active.remove(ws)
+            if ws in self.active:
+                self.active.remove(ws)
 
 
 manager = ConnectionManager()
