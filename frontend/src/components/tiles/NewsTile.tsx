@@ -10,8 +10,8 @@ export function NewsTile({ title, articles, source }: Props) {
       <div className="tile-label" style={{ color: '#1a3a6a', marginBottom: 6 }}>{title}</div>
       {articles.map((a) => (
         <div key={a.id} onClick={() => window.open(a.url, '_blank')} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, padding: '6px 0', borderBottom: '1px solid var(--border2)', cursor: 'pointer' }}
-          onMouseEnter={e => { (e.currentTarget.querySelector('.nt') as HTMLElement).style.color = '#7aaddd'; }}
-          onMouseLeave={e => { (e.currentTarget.querySelector('.nt') as HTMLElement).style.color = '#4a7aaa'; }}
+          onMouseEnter={e => { const el = e.currentTarget.querySelector<HTMLElement>('.nt'); if (el) el.style.color = '#7aaddd'; }}
+          onMouseLeave={e => { const el = e.currentTarget.querySelector<HTMLElement>('.nt'); if (el) el.style.color = '#4a7aaa'; }}
         >
           <span style={{ color: '#1a3a5a', fontSize: 9, flexShrink: 0, marginTop: 1 }}>→</span>
           <div>

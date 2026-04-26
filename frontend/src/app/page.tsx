@@ -31,6 +31,10 @@ const WATCHLIST_ROW1 = ['AAPL','NVDA','TSLA','GLD','TLT'];
 const WATCHLIST_ROW2 = ['MSFT','META','AMZN','XAR','BTC-USD'];
 const INTL = ['^HSI','000001.SS','^N225','^GDAXI','^FTSE','^FCHI','BVSP','GSPTSE'];
 
+function fakeHistory(_sym: string, up: boolean) {
+  return Array.from({ length: 30 }, (_, i) => 100 + (up ? 1 : -1) * i * 0.4 + Math.sin(i) * 2);
+}
+
 export default function Dashboard() {
   const { quotes, signal, signalHistory, prediction, news, refresh } = useMarketData();
   const [alerts, setAlerts] = useState<AlertPayload[]>([]);
@@ -49,7 +53,6 @@ export default function Dashboard() {
   useWebSocket(handleMessage);
 
   const quoteMap = Object.fromEntries(quotes.map(q => [q.symbol, q]));
-  const fakeHistory = (sym: string, up: boolean) => Array.from({ length: 30 }, (_, i) => 100 + (up ? 1 : -1) * i * 0.4 + Math.sin(i) * 2);
 
   const openChart = (q: Quote) => setChartModal({ open: true, quote: q });
   const openSignal = (s: TrumpSignal) => setSignalModal({ open: true, signal: s });
@@ -66,7 +69,7 @@ export default function Dashboard() {
       <div className="dash">
         <div className="section-header">Major Indices</div>
         <div className="g6">
-          {INDEX_SYMS.map(sym => quoteMap[sym] && <IndexTile key={sym} quote={quoteMap[sym]} onClick={openChart} />)}
+          {INDEX_SYMS.filter(sym => quoteMap[sym]).map(sym => <IndexTile key={sym} quote={quoteMap[sym]} onClick={openChart} />)}
         </div>
 
         <div className="section-header">Macro Indicators · FRED</div>
@@ -78,7 +81,7 @@ export default function Dashboard() {
 
         <div className="section-header">Commodities &amp; Currencies</div>
         <div className="g6">
-          {['GC=F','CL=F','SI=F','EURUSD=X','CNY=X','JPY=X'].map(sym => quoteMap[sym] && <IndexTile key={sym} quote={quoteMap[sym]} onClick={openChart} />)}
+          {['GC=F','CL=F','SI=F','EURUSD=X','CNY=X','JPY=X'].filter(sym => quoteMap[sym]).map(sym => <IndexTile key={sym} quote={quoteMap[sym]} onClick={openChart} />)}
         </div>
 
         <div className="section-header">Trump Signal · AI Recommendation · Sectors</div>
@@ -90,10 +93,10 @@ export default function Dashboard() {
 
         <div className="section-header">Mega-Cap Watchlist · Click to Expand</div>
         <div className="g5">
-          {WATCHLIST_ROW1.map(sym => quoteMap[sym] && <ChartTile key={sym} quote={quoteMap[sym]} history={fakeHistory(sym, quoteMap[sym].change_pct >= 0)} onClick={openChart} />)}
+          {WATCHLIST_ROW1.filter(sym => quoteMap[sym]).map(sym => <ChartTile key={sym} quote={quoteMap[sym]} history={fakeHistory(sym, quoteMap[sym].change_pct >= 0)} onClick={openChart} />)}
         </div>
         <div className="g5">
-          {WATCHLIST_ROW2.map(sym => quoteMap[sym] && <ChartTile key={sym} quote={quoteMap[sym]} history={fakeHistory(sym, quoteMap[sym].change_pct >= 0)} onClick={openChart} />)}
+          {WATCHLIST_ROW2.filter(sym => quoteMap[sym]).map(sym => <ChartTile key={sym} quote={quoteMap[sym]} history={fakeHistory(sym, quoteMap[sym].change_pct >= 0)} onClick={openChart} />)}
         </div>
 
         <div className="section-header">Trump Signal History · Algorithmic Impact Log</div>
@@ -131,7 +134,7 @@ export default function Dashboard() {
         open={chartModal.open}
         symbol={chartModal.quote?.symbol ?? ''}
         price={chartModal.quote?.price.toFixed(2) ?? ''}
-        change={`${(chartModal.quote?.change_pct ?? 0) >= 0 ? '+' : ''}${chartModal.quote?.change_pct?.toFixed(2) ?? ''}%`}
+        change={chartModal.quote ? `${chartModal.quote.change_pct >= 0 ? '+' : ''}${chartModal.quote.change_pct.toFixed(2)}%` : ''}
         direction={(chartModal.quote?.change_pct ?? 0) >= 0 ? 'bull' : 'bear'}
         source={chartModal.quote?.source ?? ''}
         data={fakeHistory(chartModal.quote?.symbol ?? '', (chartModal.quote?.change_pct ?? 0) >= 0)}

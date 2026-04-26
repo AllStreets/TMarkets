@@ -20,7 +20,7 @@ export function SignalHistoryPanel({ signals, onSelect }: Props) {
         >
           <div style={{ display: 'flex', gap: 8 }}>
             <span style={{ fontSize: 8, color: 'var(--text4)', fontFamily: 'Inter,sans-serif', width: 60, flexShrink: 0 }}>{new Date(s.posted_at).toLocaleTimeString()}</span>
-            <span style={{ fontSize: 10, color: '#c0a0a8', fontStyle: 'italic', flex: 1 }}>&quot;{s.raw_text.slice(0, 80)}&quot;</span>
+            <span style={{ fontSize: 10, color: '#c0a0a8', fontStyle: 'italic', flex: 1 }}>&quot;{(s.raw_text ?? '').slice(0, 80)}&quot;</span>
           </div>
           {s.signal_type && (
             <div style={{ paddingLeft: 68, marginTop: 3, fontSize: 9, fontFamily: 'Inter,sans-serif', color: 'var(--text3)' }}>
