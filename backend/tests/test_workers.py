@@ -50,3 +50,28 @@ def test_fetch_trump_news_filters_by_trump(db):
         results = fetch_trump_news("fake_key")
     assert len(results) == 1
     assert "Trump" in results[0]["text"]
+
+import pandas as pd
+from app.workers.macro_data import fetch_fred_series
+from app.workers.news_feed import fetch_newsapi, fetch_gnews
+
+def test_fetch_fred_series_stores_macro(db):
+    mock_series = pd.Series([5.25], index=pd.to_datetime(["2026-03-01"]))
+    with patch("app.workers.macro_data.Fred") as MockFred:
+        MockFred.return_value.get_series.return_value = mock_series
+        fetch_fred_series("FEDFUNDS", "Fed Funds Rate", db)
+    from app.models import MacroData
+    row = db.query(MacroData).filter_by(indicator="FEDFUNDS").first()
+    assert row is not None
+    assert row.source == "FRED"
+
+def test_fetch_newsapi_returns_articles():
+    fake = {"articles": [
+        {"title": "Gold hits ATH", "url": "https://mw.com/1",
+         "publishedAt": "2026-04-25T10:00:00Z", "source": {"name": "MarketWatch"}},
+    ], "status": "ok"}
+    with patch("app.workers.news_feed.requests.get") as mock_get:
+        mock_get.return_value.json.return_value = fake
+        results = fetch_newsapi("fake_key", query="markets")
+    assert len(results) == 1
+    assert results[0]["headline"] == "Gold hits ATH"
