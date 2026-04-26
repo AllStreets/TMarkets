@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import asyncio
+import json
 import logging
 import subprocess
 from app.workers.celery_app import celery
-from app.websocket import manager
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +23,9 @@ def format_alert_payload(pred, sig) -> dict:
 
 
 def send_macos_notification(title: str, body: str) -> None:
-    script = f'display notification "{body}" with title "{title}" sound name "Glass"'
+    safe_title = title.replace('"', '\\"')
+    safe_body = body.replace('"', '\\"')
+    script = f'display notification "{safe_body}" with title "{safe_title}" sound name "Glass"'
     try:
         subprocess.run(["osascript", "-e", script], check=True, timeout=5)
     except Exception as e:
@@ -50,10 +51,13 @@ def broadcast_prediction(prediction_id: int):
             title=f"TMarkets Alert — {sig.signal_type}",
             body=f"BUY {buy_syms} · SHORT {short_syms} · Conf {pred.confidence:.0%}",
         )
-        loop = asyncio.new_event_loop()
+        import json as _json
+        import redis as _redis
+        from app.config import settings as _settings
+        r = _redis.from_url(_settings.redis_url)
         try:
-            loop.run_until_complete(manager.broadcast(payload))
+            r.publish("tmarkets:alerts", _json.dumps(payload))
         finally:
-            loop.close()
+            r.close()
     finally:
         db.close()

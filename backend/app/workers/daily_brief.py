@@ -33,7 +33,7 @@ def send_daily_brief_task():
         )
         movers = sorted(
             [{"symbol": r.symbol, "change_pct": r.change_pct, "source": r.source} for r in rows],
-            key=lambda x: abs(x["change_pct"]),
+            key=lambda x: abs(x["change_pct"] or 0),
             reverse=True,
         )[:10]
         html = build_brief_html(signals=signal_dicts, top_movers=movers, macro_notes=[], earnings=[])
