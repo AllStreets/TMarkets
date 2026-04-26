@@ -31,3 +31,27 @@ def test_signals_latest_returns_signal():
         resp = client.get("/api/signals/latest")
     assert resp.status_code == 200
     assert resp.json()["signal_type"] == "TRADE_TARIFF"
+
+
+from app.services.notifications import format_alert_payload
+from app.services.email_service import build_brief_html
+
+def test_format_alert_payload_structure():
+    from app.models import Prediction, TrumpSignal
+    pred = Prediction(
+        id=1, signal_id=1,
+        buy_list=[{"ticker": "GLD", "reason": "safety"}],
+        short_list=[{"ticker": "AAPL", "reason": "exposure"}],
+        reasoning="Tariff escalation", confidence=0.87, horizon_days=5,
+    )
+    sig = TrumpSignal(id=1, raw_text="Tariffs 145%", source="truth_social", signal_type="TRADE_TARIFF")
+    payload = format_alert_payload(pred, sig)
+    assert payload["type"] == "alert"
+    assert payload["confidence"] == 0.87
+    assert any(b["ticker"] == "GLD" for b in payload["buy_list"])
+
+def test_build_brief_html_contains_sections():
+    html = build_brief_html(signals=[], top_movers=[], macro_notes=[], earnings=[])
+    assert "<html" in html
+    assert "TMarkets" in html
+    assert "7am Brief" in html
