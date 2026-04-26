@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime
 
 from openai import OpenAI
 from app.workers.celery_app import celery
 from app.database import SessionLocal
-from app.models import TrumpSignal, Prediction, MarketData
+from app.models import TrumpSignal, Prediction
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -24,7 +23,8 @@ Return only valid JSON, no markdown."""
 
 SIGNAL_TYPE_ACCURACY = {
     "TRADE_TARIFF": 0.84, "FED_PRESSURE": 0.79, "ENERGY_POLICY": 0.76,
-    "INTL_POLICY": 0.68, "FISCAL_POLICY": 0.61, "OTHER": 0.55,
+    "INTL_POLICY": 0.68, "FISCAL_POLICY": 0.61, "SANCTIONS": 0.72,
+    "DEREGULATION": 0.65, "OTHER": 0.55,
 }
 
 SAFETY_BUYS = {
@@ -109,7 +109,15 @@ def run_prediction_pipeline(signal_id: int):
         sig.directional_bias = classification.get("directional_bias", {})
         sig.confidence = confidence
         sig.llm_reasoning = classification.get("reasoning", "")
+        # Phase 1: persist classification (intentionally committed even if prediction skipped)
         db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.error("Signal classification failed for signal %d: %r", signal_id, e)
+        db.close()
+        raise
+
+    try:
         if confidence < 0.55:
             return
         rec = build_recommendation(classification, confidence)
@@ -121,7 +129,7 @@ def run_prediction_pipeline(signal_id: int):
         broadcast_prediction.delay(pred.id)
     except Exception as e:
         db.rollback()
-        logger.error("Prediction pipeline failed for signal %d: %r", signal_id, e)
+        logger.error("Prediction build/store failed for signal %d: %r", signal_id, e)
         raise
     finally:
         db.close()
